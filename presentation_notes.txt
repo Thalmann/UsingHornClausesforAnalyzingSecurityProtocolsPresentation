@@ -1,0 +1,115 @@
+* Intro
+** Jeg vil præsentere det paper jeg har læst i denne uge - titel
+** Af blanchet
+** Overordnet handler paperet om hvordan man automatisk kan tjekke om ens protokol kan angribes
+
+* Motivation
+** One should think authentication for instance should be rather simple. Widely discussed concept.
+** Many things to take into account.
+** This paper show how to solve some of these issues and also have designed a tool to help the user.
+
+
+* ProVerif
+** ProVerif is a protocol verifier
+** To use: Write formal model of protocol in the applied pi-calculus. ProVerif translates that to horn clauses.
+** Output: "Yes", "Cannot tell" or the program runs indefinitely.
+** ProVerif can verify: symmetric and asymmetric encryption; digital signatures; hash functions; bit-commitment; and non-interactive zero-knowledge proofs
+** Horn logic, Resolution proof 
+
+
+* Dolev-Yao model
+** The Dolev–Yao model is a formal model used to prove properties of cryptographic protocols.
+** The attacker can listen, intercept, send and alter messages send over the network.
+** So everything except of what he is limited by cryptographically.
+** ProVerif is proving security properties of protocols in a Dolev-Yao environment in an automatic way
+
+
+* Syntax
+** A protocol is represented by a set of horn clauses - the syntax used looks like this:
+  \begin{itemize}
+  \item $\textbf{x}$ ranges over variables  
+  \item $a$ ranges over names
+  \item $f$ ranges over function symbols
+  \item $p$ ranges over predicate symbols
+  \item $M$ are terms - which are messages that are exchanged
+  \end{itemize}
+\begin{frame}
+
+  \begin{itemize}
+  \item A variable can represent any term.
+  \item Names represent atomic values, such as keys and nonce's.
+  \item A principal can create new names - they are created at each run of the protocol.
+  \item Names only differ if the messages when using them differ.
+  \item The functions build terms - this could be encryption or hash functions.
+  \item A fact expresses a property of a message.
+  \end{itemize}
+\end{frame}
+
+* Handshake protocol example
+** Given two principals, A and B.
+** A and B each have a secret and a public key.
+** A generates a new key k which it signs with its secret key sk_A and encrypts that with B's public key, pk_B.
+** When B receives the message it decrypts it and exspects that k is from A cause it is signed.
+** B can now send the secret, s, to A encrypted with k.
+** The protocols is actually only message 1 :-)
+
+
+* Cryptographic primitives
+** There are constructors and destructors.
+** Constructors: Are functions that are used in terms that represent messages.
+** Destructors: Are functions that manipulate terms. Some rewrite stuff ??
+** Constructors and desctructors examples
+
+
+* Attacker
+
+* Protocol
+** Clauses representing computations abilities: constructors, destructors, names
+** Facts corresponding to the initial knowledge.
+** One set of clauses for each message in the protocol.	
+
+* Secrecy
+** Remember the attacker can listen, intercept, send and alter - if he cannot do that to a message it is secret
+** A term is secret if it is not derivable
+** Måske indsæt træ?
+
+* Handshake protocol example input
+**
+
+* Handshake protocol example attack
+** attacker(s) the attacker may have name s, in this case the secret
+** In other words, the attacker starts a session between A and a dishonest participant of secret key a[ ].
+** It gets the first message pencrypt(sign(k, sk A [ ]), pk(a[ ])), decrypts it
+** reencrypts it under pk(sk B [ ]), and sends it to B.
+** For B, this message looks like the first message of a session between A and B, so B replies with sencrypt(s, k),
+** which the attacker can decrypt since it obtains k from the first message.
+
+
+* Resolution Algorithm
+** Our representation is a set of Horn clauses, and our goal is to determine whether a given fact can be derived from these clauses or not.
+** The main idea is to combine two clauses by using a selection function
+** The selection function therefor has major impact on the result
+** They have choosen that the selection function should reduce the number of facts - so one does not have so many resolutions to perform - faster performance
+** First phase: Clauses to new clause that derives the same facts.
+** Second phase: Depth First Search
+** Optimizations: Standard: Elimination of duplicates hypotheses and conclusions that do not derive new facts
+** Optimizations: Specific to protocols: Remove attacker(x) if variable x is not used elsewhere. Secrecy assumption - The user can tell ProVerif that a given fact is always secret - the tool removes all clauses with the given fact. But the tool still checks whether the user is right or wrong. This speeds up the search.
+** Termination: Because the derivability problem is undecidable the resolution algorithm may not always terminate! Gobels completeness theorem followed by robinsons resolution algorithm states that we can show that a sentence follow from a premise if they do but we cannot always show if they dont.
+** Termination: Tagged protocols - transform protocol into a tagged one - good protocol design
+
+
+* Experimental results
+** Nothing new in paper
+** Other paper had some results on a Pentium M 1.8 GHz processor
+** Thats awesome but not from this paper :-(
+
+* Contribution
+** The core stuff of ProVerif is from this article imo - which was from 2001.
+** I have not read it closely - but it seems that the contribution is the horn logic and the pi-calculus.
+** NRL Analyzer is kind of the same but in this contribution there is a better rationale for the tool. Although the proofs do not consider the optimizations.
+** Checking a security policy that fast is awesome
+** 33 citations mange af dem af ham selv
+
+* Session
+** En session er en forbindelse mellem to maskiner hvor der bruges den samme session key. Hvis den ændres er det en ny session.
+
